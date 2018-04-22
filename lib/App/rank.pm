@@ -9,4 +9,9 @@ package App::rank;
 
 See the command-line script L<rank>.
 
+
+=head1 SEE ALSO
+
+L<List::Rank>, L<Sort::Rank>
+
 =cut
