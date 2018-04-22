@@ -1,3 +1,10 @@
+0.003   2018-04-22 (PERLANCAR)
+
+	- Add option: --rank.
+
+	- [doc] Mention List::Rank & Sort::Rank.
+
+
 0.002   2018-04-22 (PERLANCAR)
 
 	- No functional changes.
