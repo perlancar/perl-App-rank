@@ -146,12 +146,12 @@ Sample output using C<rank -n>:
 
 Sample output using C<rank -np>:
 
- 1    89    parjiyem
- 2    77    nono
- 3    75    robi
- 3    75    tedi
- 5    30    budi
- 6    21    ujang
+ 1    100.000   89    parjiyem
+ 2    85.714    77    nono
+ 3    71.429    75    robi
+ 3    71.429    75    tedi
+ 5    42.857    30    budi
+ 6    14.286    21    ujang
 
 
 =head1 OPTIONS
