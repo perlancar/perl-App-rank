@@ -121,9 +121,10 @@ run();
 =head1 DESCRIPTION
 
 C<rank> ranks lines of text, by default using the first field as the sort key
-(can be changed with C<--sort-field> option). When there are multiple rows that
-have the same sort key, C<rank> will assign the same rank to the rows. Finally,
-the rank will be displayed from the highest (1).
+(can be changed with C<--sort-field> option). When there are multiple lines that
+have the same sort key, C<rank> will assign the same rank to the lines. Finally,
+the lines will be displayed with the ranks, starting from the highest ranked
+(1).
 
 Sample input:
 
