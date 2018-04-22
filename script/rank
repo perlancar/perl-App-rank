@@ -17,6 +17,7 @@ my %Opts = (
     sort_field => 0,
     show_rank => 1,
     show_percentile => 0,
+    rank => 'default',
     # TODO: --dictionary-order, -d
     # TODO: --ignore-nonprinting, -i
     # TODO: --human-numeric-sort, -h
@@ -33,6 +34,7 @@ sub parse_cmdline {
         'numeric-sort|n' => sub { $Opts{sort} = 'numeric' },
         'sort=s' => \$Opts{sort},
         'sort-field=i' => \$Opts{sort_field},
+        'rank=s' => \$Opts{rank},
         'show-rank!' => \$Opts{show_rank},
         'show-percentile!' => \$Opts{show_percentile},
         '-p' => sub { $Opts{show_percentile} = 1 },
@@ -87,17 +89,50 @@ sub run {
 
     @data = sort { $sortsub->($a->[0], $b->[0]) } @data;
 
+    # if we're using the 'no-skip' ranking system, we'll need to calculate
+    # the lowest ranking (highest number)first
+    my $lowest_rank;
+    if ($Opts{rank} eq 'no-skip') {
+        my $prev_sortkey;
+        for my $row_num (0..$#data) {
+            my $item = $data[$row_num];
+            my $sortkey = $item->[0];
+            if (!defined($prev_sortkey) ||
+                    $sortsub->($sortkey, $prev_sortkey) > 0) {
+                $lowest_rank //= 0;
+                $lowest_rank++;
+            }
+            $prev_sortkey = $sortkey;
+        }
+    }
+
     my $rank;
     my $prev_sortkey;
     for my $row_num (0..$#data) {
         my $item = $data[$row_num];
         my $sortkey = $item->[0];
-        if (!defined($prev_sortkey) ||
-                $sortsub->($sortkey, $prev_sortkey) > 0) {
+
+        my $percentile;
+        if ($Opts{rank} eq 'default') {
+            if (!defined($prev_sortkey) ||
+                    $sortsub->($sortkey, $prev_sortkey) > 0) {
+                $rank = $row_num+1;
+            }
+            $percentile = (@data - $rank + 1)/@data * 100;
+        } elsif ($Opts{rank} eq 'no-skip') {
+            if (!defined($prev_sortkey) ||
+                    $sortsub->($sortkey, $prev_sortkey) > 0) {
+                $rank //= 0;
+                $rank++;
+            }
+            $percentile = ($lowest_rank - $rank+1) / $lowest_rank * 100;
+        } else { # no-same
             $rank = $row_num+1;
+            $percentile = (@data - $rank + 1)/@data * 100;
         }
+
         print $rank, $fs if $Opts{show_rank};
-        printf "%.3f%s", (@data - $rank + 1)/@data * 100, $fs
+        printf "%.3f%s", $percentile, $fs
             if $Opts{show_percentile};
         print $item->[1];
         $prev_sortkey = $sortkey;
@@ -172,6 +207,37 @@ Sample output using C<rank -np>:
 =item * --numeric-sort, -n
 
 =item * --sort-field=i (default: 0)
+
+=item * rank=s (default: default)
+
+Change ranking system. The default is to have all lines that have the same sort
+keys to be ranked the same, but the next ranking will skip numbers:
+
+ 1    89    parjiyem
+ 2    77    nono
+ 3    75    robi
+ 3    75    tedi
+ 5    30    budi
+ 6    21    ujang
+
+The C<no-skip> ranking system will not do these skips:
+
+ 1    89    parjiyem
+ 2    77    nono
+ 3    75    robi
+ 3    75    tedi
+ 4    30    budi
+ 5    21    ujang
+
+The C<no-same> ranking system will assign different ranks to lines that have the
+same sort key:
+
+ 1    89    parjiyem
+ 2    77    nono
+ 3    75    robi
+ 4    75    tedi
+ 5    30    budi
+ 6    21    ujang
 
 =item * --no-show-rank
 
