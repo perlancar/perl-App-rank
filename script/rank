@@ -1,0 +1,202 @@
+#!perl
+
+# DATE
+# VERSION
+
+use 5.010001;
+use strict;
+use warnings;
+
+use Getopt::Long;
+
+my %Opts = (
+    ignore_leading_blanks => 0,
+    reverse => 0,
+    sort => 'ascii',
+    field_separator => "\t",
+    sort_field => 0,
+    show_rank => 1,
+    show_percentile => 0,
+    # TODO: --dictionary-order, -d
+    # TODO: --ignore-nonprinting, -i
+    # TODO: --human-numeric-sort, -h
+    # TODO: --version-sort, -V
+    # TODO: --percentile-format=s
+);
+
+sub parse_cmdline {
+    my $res = GetOptions(
+        'ignore-leading-blanks|b' => \$Opts{ignore_leading_blanks},
+        'ignore-case|f' => \$Opts{ignore_case},
+        'reverse|r' => \$Opts{reverse},
+        'field-separator|t=s' => \$Opts{field_separator},
+        'numeric-sort|n' => sub { $Opts{sort} = 'numeric' },
+        'sort=s' => \$Opts{sort},
+        'sort-field=i' => \$Opts{sort_field},
+        'show-rank!' => \$Opts{show_rank},
+        'show-percentile!' => \$Opts{show_percentile},
+        '-p' => sub { $Opts{show_percentile} = 1 },
+        'help|h' => sub {
+            print <<USAGE;
+Usage:
+  rank [OPTIONS]... [INPUT]...
+  rank --help
+
+For more details, see the manpage/documentation.
+USAGE
+            exit 0;
+        },
+        'version|v' => sub {
+            no warnings 'once';
+            say "rank version ".($main::VERSION // 'dev');
+            exit 0;
+        },
+    );
+    exit 99 if !$res;
+}
+
+sub run {
+    my $fs = $Opts{field_separator};
+
+    my @data; # elem: [sortkey, $orig_line]
+    my $re_split_fields = qr/\Q$fs\E/;
+    while (defined (my $line = <>)) {
+        if ($Opts{ignore_leading_blanks}) {
+            $line =~ s/\A\s+//;
+        }
+        my @fields = split $re_split_fields, $line;
+        my $sortkey = $fields[$Opts{sort_field}] // '';
+        if ($Opts{ignore_case}) { $sortkey = lc $sortkey };
+        push @data, [$sortkey, $line];
+    }
+
+    my $sortsub;
+    if ($Opts{sort} eq 'numeric') {
+        if ($Opts{reverse}) {
+            $sortsub = sub { $_[0] <=> $_[1] };
+        } else {
+            $sortsub = sub { $_[1] <=> $_[0] };
+        }
+    } else {
+        if ($Opts{reverse}) {
+            $sortsub = sub { $_[1] cmp $_[0] };
+        } else {
+            $sortsub = sub { $_[0] cmp $_[1] };
+        }
+    }
+
+    @data = sort { $sortsub->($a->[0], $b->[0]) } @data;
+
+    my $rank;
+    my $prev_sortkey;
+    for my $row_num (0..$#data) {
+        my $item = $data[$row_num];
+        my $sortkey = $item->[0];
+        if (!defined($prev_sortkey) ||
+                $sortsub->($sortkey, $prev_sortkey) > 0) {
+            $rank = $row_num+1;
+        }
+        print $rank, $fs if $Opts{show_rank};
+        printf "%.3f%s", (@data - $rank + 1)/@data * 100, $fs
+            if $Opts{show_percentile};
+        print $item->[1];
+        $prev_sortkey = $sortkey;
+    }
+}
+
+# MAIN
+
+parse_cmdline();
+run();
+
+1;
+# ABSTRACT: Rank lines of text
+# PODNAME:
+
+=head1 SYNOPSIS
+
+ rank [OPTION]... [FILE]...
+
+
+=head1 DESCRIPTION
+
+C<rank> ranks lines of text, by default using the first field as the sort key
+(can be changed with C<--sort-field> option). When there are multiple rows that
+have the same sort key, C<rank> will assign the same rank to the rows. Finally,
+the rank will be displayed from the highest (1).
+
+Sample input:
+
+ 21    ujang
+ 30    budi
+ 50    atang
+ 75    robi
+ 89    parjiyem
+ 77    nono
+ 75    tedi
+
+Sample output using C<rank -n>:
+
+ 1    89    parjiyem
+ 2    77    nono
+ 3    75    robi
+ 3    75    tedi
+ 5    30    budi
+ 6    21    ujang
+
+Sample output using C<rank -np>:
+
+ 1    89    parjiyem
+ 2    77    nono
+ 3    75    robi
+ 3    75    tedi
+ 5    30    budi
+ 6    21    ujang
+
+
+=head1 OPTIONS
+
+=over
+
+=item * --reverse, -r
+
+=item * --ignore-leading-blanks, -b
+
+=item * --ignore-case, -i
+
+=item * --field-separator, -f (default: Tab)
+
+=item * --sort=s
+
+=item * --numeric-sort, -n
+
+=item * --sort-field=i (default: 0)
+
+=item * --no-show-rank
+
+=item * --show-percentile, -p
+
+=item * --help, -h
+
+=item * --version, -v
+
+=back
+
+
+=head1 EXIT CODES
+
+0 on success.
+
+255 on I/O error.
+
+99 on command-line options error.
+
+
+=head1 FAQ
+
+
+=head1 SEE ALSO
+
+B<sort>
+
+=cut
