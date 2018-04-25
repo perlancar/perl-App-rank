@@ -213,7 +213,7 @@ Sample input:
  77    nono
  75    tedi
 
-Sample output using C<rank -n>:
+Sample output using C<rank -n> (a.k.a. C<rank --numeric-sort>):
 
  1    89    parjiyem
  2    77    nono
@@ -222,7 +222,8 @@ Sample output using C<rank -n>:
  5    30    budi
  6    21    ujang
 
-Sample output using C<rank -np>:
+Sample output using C<rank -np> (a.k.a. C<rank --numeric-sort
+--show-percentile>):
 
  1    100.000   89    parjiyem
  2    85.714    77    nono
@@ -230,6 +231,14 @@ Sample output using C<rank -np>:
  3    71.429    75    tedi
  5    42.857    30    budi
  6    14.286    21    ujang
+
+Sample output using C<rank -n --calc-percentile 5,25,50,75,95>):
+
+ 95.000  84.80000000
+ 75.000  75.50000000
+ 50.000  56.25000000
+ 25.000  27.75000000
+ 5.000   15.15000000
 
 
 =head1 OPTIONS
@@ -240,7 +249,12 @@ Sample output using C<rank -np>:
 
 Valid values: C<rank>, C<calc-percentile>
 
-=item * --calc-percentile=f, ...
+The default action is to show ranking (C<rank>).
+
+Action C<calc-percentile> will calculate specific percentiles. Usually you just
+specify C<--calc-percentile a,b,c,...> to set action to C<calc-percentile>.
+
+=item * --calc-percentile=f1,f2,...
 
 Imply C<--action=calc-percentile>. Calculate specific percentile(s). Will use
 linear interpolation to get the percentile values.
@@ -255,7 +269,12 @@ linear interpolation to get the percentile values.
 
 =item * --sort=s
 
+Valid values: C<numeric>, C<ascii>.
+
 =item * --numeric-sort, -n
+
+Shortcut for C<--sort=numeric>. By default numeric sort order is descending
+instead of ascending. To do ascending sort, add C<-r>.
 
 =item * --sort-field=i (default: 0)
 
