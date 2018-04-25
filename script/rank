@@ -7,7 +7,7 @@ use 5.010001;
 use strict;
 use warnings;
 
-use Getopt::Long;
+use Getopt::Long qw(:config bundling no_ignore_case);
 
 my %Opts = (
     action => 'rank',
