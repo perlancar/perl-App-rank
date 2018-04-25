@@ -160,7 +160,7 @@ sub run {
                 if ($percentile == $percentiles[0]) {
                     printf "%.3f\t%.8f\n", $percentile, $sortkey;
                     shift @percentiles;
-                } elsif ($percentile < $percentiles[0]) {
+                } elsif ($percentile < $percentiles[0] || $row_num == $#data) {
                     if (defined $prev_percentile) {
                         # linear interpolation
                         my $val = $prev_sortkey +
