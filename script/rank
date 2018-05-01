@@ -289,8 +289,9 @@ keys to be ranked the same, but the next ranking will skip numbers:
  2    77    nono
  3    75    robi
  3    75    tedi
- 5    30    budi
- 6    21    ujang
+ 5    50    atang
+ 6    30    budi
+ 7    21    ujang
 
 The C<no-skip> ranking system will not do these skips:
 
@@ -298,8 +299,9 @@ The C<no-skip> ranking system will not do these skips:
  2    77    nono
  3    75    robi
  3    75    tedi
- 4    30    budi
- 5    21    ujang
+ 4    50    atang
+ 5    30    budi
+ 6    21    ujang
 
 The C<no-same> ranking system will assign different ranks to lines that have the
 same sort key:
@@ -308,8 +310,9 @@ same sort key:
  2    77    nono
  3    75    robi
  4    75    tedi
- 5    30    budi
- 6    21    ujang
+ 5    50    atang
+ 6    30    budi
+ 7    21    ujang
 
 =item * --no-show-rank
 
