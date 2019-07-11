@@ -1,18 +1,18 @@
-0.007   2018-05-01 (PERLANCAR)
+0.007   2018-05-01  Released-By: PERLANCAR
 
 	- No functional changes.
 
 	- [doc] Fix *all* the examples, including in the Options section.
 
 
-0.006   2018-05-01 (PERLANCAR)
+0.006   2018-05-01  Released-By: PERLANCAR
 
 	- No functional changes.
 
 	- [doc] Fix results in Synopsis.
 
 
-0.005   2018-04-25 (PERLANCAR)
+0.005   2018-04-25  Released-By: PERLANCAR
 
 	- [doc] Add --calc-percentile example in Synopsis and more
 	  documentation for options.
@@ -23,26 +23,26 @@
 	  no_ignore_case).
 
 
-0.004   2018-04-25 (PERLANCAR)
+0.004   2018-04-25  Released-By: PERLANCAR
 
 	- Add options: --action (new action calc-percentile),
 	  --calc-percentile to calculate specific percentiles.
 
 
-0.003   2018-04-22 (PERLANCAR)
+0.003   2018-04-22  Released-By: PERLANCAR
 
 	- Add option: --rank.
 
 	- [doc] Mention List::Rank & Sort::Rank.
 
 
-0.002   2018-04-22 (PERLANCAR)
+0.002   2018-04-22  Released-By: PERLANCAR
 
 	- No functional changes.
 
 	- [doc] Fix example result in Synopsis.
 
 
-0.001   2018-04-22 (PERLANCAR)
+0.001   2018-04-22  Released-By: PERLANCAR
 
         - First release.
